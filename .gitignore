@@ -6,7 +6,6 @@ dist.zip
 dist_electron
 /child
 /package-lock.json
-/package.json
 
 # local env files
 .env
