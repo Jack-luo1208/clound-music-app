@@ -1,53 +1,31 @@
-const fs = require('fs')
-import { resolve } from 'path'
-// Dotenv 是一个零依赖的模块，它能将环境变量中的变量从 .env 文件加载到 process.env 中
-const dotenv = require('dotenv')
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-// const envFiles = [
-//   /** default file */
-//   `.env`,
-//   /** mode file */
-//   `.env.${process.env.NODE_ENV}`
-// ]
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import path from 'path';
 
-// for (const file of envFiles) {
-//   const envConfig = dotenv.parse(fs.readFileSync(file))
-//   for (const k in envConfig) {
-//     process.env[k] = envConfig[k]
-//   }
-// }
+const baseUrl = {
+  development: './',
+  beta: './',
+  release: './'
+};
 
-export default defineConfig({
-  plugins: [vue()],
-  base: './',
-  server: {
-    port: 8080,
-    // 是否自动在浏览器打开
-    open: true,
-    // 是否开启 https
-    https: false,
-    proxy: {
-      '/api': {
-        target: 'https://cloud-music-api-lake.vercel.app/',
-        changeOrigin: true,
-        rewrite: (pathStr) => pathStr.replace('/api', '')
+// https://vitejs.dev/config/
+export default ({ mode }) =>
+  defineConfig({
+    plugins: [vue()],
+    base: baseUrl[mode],
+    resolve: {
+      alias: {
+        '~': path.resolve(__dirname, './'),
+        '@': path.resolve(__dirname, 'src')
+      }
+    },
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://backend-api-02.newbee.ltd/manage-api/v1',
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/api/, '')
+        }
       }
     }
-  },
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, './src'),
-      public: resolve(__dirname, './public')
-    }
-  },
-  optimizeDeps: {
-    include: ['element-plus', 'element-plus/lib/locale/lang/zh-cn', 'dayjs/locale/zh-cn']
-  },
-  build: {
-    // 压缩
-    minify: 'esbuild',
-    assetsDir: ''
-    // outDir: `./dist/${process.env.VITE_ENV}`
-  }
-})
+  });
