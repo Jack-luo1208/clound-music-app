@@ -18,14 +18,5 @@ export default ({ mode }) =>
         '~': path.resolve(__dirname, './'),
         '@': path.resolve(__dirname, 'src')
       }
-    },
-    server: {
-      proxy: {
-        '/api': {
-          target: 'http://backend-api-02.newbee.ltd/manage-api/v1',
-          changeOrigin: true,
-          rewrite: path => path.replace(/^\/api/, '')
-        }
-      }
     }
   });
